@@ -3,6 +3,7 @@ import { OpenAIService } from 'src/openai/openai.service';
 import { HotelsService } from 'src/hotels/hotels.service';
 import { FlightsService } from 'src/flights/flights.service';
 import { LocationService } from 'src/location/location.service';
+import { start } from 'repl';
 
 @Controller('recommendations')
 export class RecommendationsController {
@@ -17,6 +18,9 @@ export class RecommendationsController {
     @Get()
     async getRecommendations(
         @Query('departureLocation') departureLocation: string,
+        @Query('startDate') startDate: string,
+        @Query('endDate') endDate: string,
+        @Query('adults') totalAdults: number,
         @Query('travelMonth') travelMonth: string,                          // for seasonal suitability
         @Query('interests') rawInterests: string,                            // array of comma-seperated strings ("beaches", "history", "food")
         @Query('tripLength') tripLength: number,                            // e.g 7 days
@@ -32,7 +36,7 @@ export class RecommendationsController {
             travelMonth,
             tripLength,
             travelStyle,
-            temperaturePreference
+            temperaturePreference,
         )
 
         // STEP 2: Give a Captain Travo response to why they should travel to the destination
@@ -42,18 +46,17 @@ export class RecommendationsController {
             travelMonth,
             tripLength,
             travelStyle,
-            temperaturePreference
+            temperaturePreference,
         );
 
         // STEP 3: Show different flights to the recommended location
         const flights: any = await this.flightsService.getFlights(
             await this.locationService.getCityIATACode(departureLocation),
             await this.locationService.getCityIATACode(recommendedDestination.split(',')[0]),
-            
-            // TODO: Make this dynamic
-            "2025-05-25",
-            "2025-06-25",
-            1
+
+            startDate,
+            endDate,
+            totalAdults,
         )
 
         // STEP 4: Show different hotels at the destination
@@ -64,7 +67,7 @@ export class RecommendationsController {
             recommendedDestination,
             travelReason,
             hotels,
-            flights
+            flights,
         }
     }
 }

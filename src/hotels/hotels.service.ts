@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LocationService } from 'src/location/location.service';
+import { HotelOffer } from './hotels.interface';
 
 const Amadeus = require('amadeus');
 
@@ -16,18 +17,24 @@ export class HotelsService {
     });
   }
 
-  async getHotelsInCity(city: string): Promise<any> {
+  async getHotelsInCity(
+    city: string
+  ): Promise<HotelOffer[]> {
     try {
         const cityCode = await this.locationService.getCityIATACode(city);
 
-        const hotelsResponse = await this.amadeus.referenceData.locations.hotels.byCity.get({
+        const response = await this.amadeus.referenceData.locations.hotels.byCity.get({
             cityCode: cityCode,
         });
+        const filteredResponse = response.data.map(hotels => ({
+          hotelName: hotels.name,
+          hotelId: hotels.hotelId,
+        }));
 
-        return hotelsResponse.data;
+        return filteredResponse.slice(0, 15);
     } catch (error) {
         console.error('Error fetching hotels: ', error);
         throw error;
     }
-    }
+  }
 }
