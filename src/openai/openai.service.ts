@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 export class OpenAIService {
     private readonly client: OpenAI;
     private readonly endpoint: string = "https://models.github.ai/inference";
-    private readonly model: string = "openai/gpt-4o";
+    private readonly model: string = "openai/gpt-4.1-mini";
 
     constructor() {
         this.client = new OpenAI({
@@ -18,7 +18,6 @@ export class OpenAIService {
         destination: string,
         interests: string[],
         travelMonth: string,
-        tripLength: number,
         travelStyle: string,
         temperaturePreference: string
     ): Promise<string> {
@@ -52,7 +51,7 @@ export class OpenAIService {
                 {
                     role: 'user',
                     content: `
-                        I'm planning a ${tripLength}-day trip in ${travelMonth}. 
+                        I'm planning a trip in ${travelMonth}. 
                         I love ${interests.join(', ')} and prefer a ${travelStyle} travel style. 
                         I enjoy ${temperaturePreference} weather. 
 
@@ -70,7 +69,6 @@ export class OpenAIService {
         departureLocation: string,
         interests: string[],
         travelMonth: string,
-        tripLength: number,
         travelStyle: string,
         temperaturePreference: string
     ): Promise<string> {
@@ -95,7 +93,6 @@ export class OpenAIService {
                     Departure location: ${departureLocation}
                     Interests: ${interests.join(', ')}
                     Travel month: ${travelMonth}
-                    Trip length: ${tripLength} days
                     Travel style: ${travelStyle}
                     Temperature preference: ${temperaturePreference}
 

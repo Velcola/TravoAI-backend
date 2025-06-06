@@ -31,7 +31,7 @@ export class HotelsService {
           hotelId: hotels.hotelId,
         }));
 
-        return filteredResponse.slice(0, 15);
+        return filteredResponse.slice(0, 10);
     } catch (error) {
         console.error('Error fetching hotels: ', error);
         throw error;

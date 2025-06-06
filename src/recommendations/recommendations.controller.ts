@@ -23,7 +23,6 @@ export class RecommendationsController {
         @Query('adults') totalAdults: number,
         @Query('travelMonth') travelMonth: string,                          // for seasonal suitability
         @Query('interests') rawInterests: string,                            // array of comma-seperated strings ("beaches", "history", "food")
-        @Query('tripLength') tripLength: number,                            // e.g 7 days
         @Query('travelStyle') travelStyle: string,                          // for example: "relaxing", "romantic", "adventure"
         @Query('temperaturePreference') temperaturePreference: string       // "warm", "cool", "mild"
     ): Promise<any> {
@@ -34,7 +33,6 @@ export class RecommendationsController {
             departureLocation,
             interests,
             travelMonth,
-            tripLength,
             travelStyle,
             temperaturePreference,
         )
@@ -44,7 +42,6 @@ export class RecommendationsController {
             recommendedDestination,
             interests,
             travelMonth,
-            tripLength,
             travelStyle,
             temperaturePreference,
         );
@@ -61,7 +58,17 @@ export class RecommendationsController {
 
         // STEP 4: Show different hotels at the destination
         // No longer broken because of Amadeus!! NEVER TOUCH THIS. IT WORKS.
-        const hotels: any = await this.hotelsService.getHotelsInCity(recommendedDestination.split(',')[0]);
+        let hotels: any = [];
+        try {
+        hotels = await this.hotelsService.getHotelsInCity(recommendedDestination.split(',')[0]);
+        } catch (error) {
+            console.error('Error fetching hotels:', error?.response?.result?.errors || error.message);
+            
+            hotels = {
+                error: true,
+                message: 'No hotels found for this city.',
+            };
+        }
 
         return {
             recommendedDestination,
